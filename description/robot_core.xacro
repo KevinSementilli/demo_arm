@@ -93,7 +93,7 @@
         <visual>
             <origin xyz="0 0 0.015"/>
             <geometry>
-                <box size="0.04 0.04 0.03"/>
+                <box size="0.064 0.04 0.03"/>
             </geometry>
             <material name="blue"/>
         </visual>
@@ -110,7 +110,47 @@
 
     <!-- ____________________________ Arm1 ______________________ -->
 
-    
+    <link name="arm1_bracket">
+        <visual>
+            <origin xyz="-0.068 0.0125 0.0745" rpy="${pi} 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm1_bracket.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="orange"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm1_bracket.stl" scale="0.001 0.001 0.001"/> 
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="arm1_joint" type="revolute">
+        <parent link="arm1_motor"/>
+        <child link="arm1_bracket"/>
+        <origin xyz="0.034 -0.014 0.022" rpy="0 0 0"/>
+        <axis xyz="1 0 0" rpy="0 0 0"/>
+        <limit lower="-${pi/2}" upper="${pi/2}" effort="100" velocity="0.2"/>
+    </joint>
+
+    <!-- ___________________________ Arm2 _______________________________ -->
+
+    <!-- <link name="arm2_bracket">
+        <visual>
+            <origin xyz="-0.034 0.0125 0.0745" rpy="${pi} 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm2_bracket.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="orange"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm2_bracket.stl" scale="0.001 0.001 0.001"/> 
+            </geometry>
+        </collision>
+    </link> -->
 
 
 </robot>
