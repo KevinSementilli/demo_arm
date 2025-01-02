@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <gazebo reference="base">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <gazebo reference="rot_base">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <gazebo reference="arm1_motor">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <gazebo reference="arm1_bracket">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <gazebo reference="arm2_bracket">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <gazebo reference="arm2_motor">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <gazebo reference="arm2_stem">
+        <material>Gazebo/White</material>
+    </gazebo>
+
+    <gazebo reference="arm3_motor">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <gazebo reference="arm3_bracket">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <gazebo reference="claw_base">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <gazebo reference="left_claw">
+        <material>Gazebo/Black</material>
+    </gazebo>
+
+    <gazebo reference="right_claw">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <gazebo>
+        <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+            <parameters>$(find demo_arm)/config/joint_jog_control.yaml</parameters>
+        </plugin>
+    </gazebo>
+
+</robot>
