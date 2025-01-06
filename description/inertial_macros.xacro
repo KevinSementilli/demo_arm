@@ -26,8 +26,18 @@
             <xacro:insert_block name="origin"/>
             <mass value="${mass}" />
             <inertia ixx="${(2/5) * mass * (radius*radius)}" ixy="0.0" ixz="0.0"
-                    iyy="${(2/5) * mass * (radius*radius)}" iyz="0.0"
-                    izz="${(2/5) * mass * (radius*radius)}" />
+                     iyy="${(2/5) * mass * (radius*radius)}" iyz="0.0"
+                     izz="${(2/5) * mass * (radius*radius)}" />
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="inertial_bracket" params="mass length height width *origin">
+        <inertial>
+            <xacro:insert_block name="origin"/>
+            <mass value="${mass}"/>
+            <inertia ixx="${0.0}" ixy="0.0" ixz="0.0"
+                    iyy="${0.0}" iyz="0.0"
+                    izz="${0.0}" />
         </inertial>
     </xacro:macro>
 
