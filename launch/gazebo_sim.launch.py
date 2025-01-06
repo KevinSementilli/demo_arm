@@ -12,8 +12,6 @@ def generate_launch_description():
 
     package_name='demo_arm'
 
-    config_file = os.path.join(get_package_share_directory(package_name), 'config', 'vel_controller.yaml')
-
     # launch robot_state_publisher with sim_time set to true
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -39,7 +37,7 @@ def generate_launch_description():
     joint_vel_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_vel_cont"],
+        arguments=["vel_controller"],
     )
 
     joint_broad_spawner = Node(
@@ -48,29 +46,11 @@ def generate_launch_description():
         arguments=["joint_broad"],
     )
 
-    # launch the joy_node that outputs gamepad interpretation into the /joy topic
-    # joy_node_spawner = Node(
-    #     package='joy',
-    #     executable='joy_node',
-    #     name='joy_node',
-    #     output='screen',
-    # )
-
-    # # launch the custom node to convert gamepad interpretation into velocity commands
-    # gamepad_node = Node(
-    #     package='robot_teleop',
-    #     executable='teleop_jointjog_joy',
-    #     name='teleop_jointjog_joy',
-    #     output='screen',
-    #     parameters=[os.path.join(get_package_share_directory(package_name), 'config', 'joy_config.yaml')],
-    # )
 
     return LaunchDescription([
         rsp,
         gazebo,
         spawn_entity,
         joint_vel_spawner,
-        joint_broad_spawner,
-        # joy_node_spawner,
-        # gamepad_node,
+        joint_broad_spawner
     ])
