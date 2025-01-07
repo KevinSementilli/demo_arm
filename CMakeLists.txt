@@ -23,7 +23,7 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-target_link_libraries(demo_arm PUBLIC serial)
+# target_link_libraries(demo_arm PUBLIC serial)
 
 install(
   DIRECTORY config description hardware launch meshes
