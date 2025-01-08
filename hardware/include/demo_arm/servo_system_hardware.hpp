@@ -1,5 +1,5 @@
-#ifndef SERVOBOT_SYSTEM_HPP_
-#define SERVOBOT_SYSTEM_HPP_
+#ifndef DEMO_ARM_SERVO_SYSTEM_HARDWARE_HPP_
+#define DEMO_ARM_SERVO_SYSTEM_HARDWARE_HPP_
 
 #include <memory>
 #include <string>
@@ -22,7 +22,7 @@
 
 namespace demo_arm
 {
-  class ServoBotSystemHardware : public hardware_interface::SystemInterface {
+  class ServoSystemHardware : public hardware_interface::SystemInterface {
   
   struct Config {
     
@@ -41,7 +41,7 @@ namespace demo_arm
   };
 
   public:
-    RCLCPP_SHARED_PTR_DEFINITIONS(ServoBotSystemHardware);
+    RCLCPP_SHARED_PTR_DEFINITIONS(ServoSystemHardware);
 
     hardware_interface::CallbackReturn on_init(
       const hardware_interface::HardwareInfo & info) override;
@@ -77,4 +77,4 @@ namespace demo_arm
 
 } // namespace demo_arm
 
-#endif
+#endif // DEMO_ARM_SERVO_SYSTEM_HARDWARE_HPP

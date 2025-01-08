@@ -1,4 +1,4 @@
-#include "demo_arm/servobot_system.hpp"
+#include "demo_arm/servo_system_hardware.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -15,7 +15,7 @@
 
 namespace demo_arm {
 
-hardware_interface::CallbackReturn ServoBotSystemHardware::on_init(
+hardware_interface::CallbackReturn ServoSystemHardware::on_init(
   const hardware_interface::HardwareInfo & info) {
 
   if (
@@ -48,7 +48,7 @@ hardware_interface::CallbackReturn ServoBotSystemHardware::on_init(
     if (joint.command_interfaces.size() != 1)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("ServoBotSystemHardware"), "Joint '%s' has %zu command interfaces found. 1 expected.",
+        rclcpp::get_logger("ServoSystemHardware"), "Joint '%s' has %zu command interfaces found. 1 expected.",
         joint.name.c_str(), joint.command_interfaces.size());
       return hardware_interface::CallbackReturn::ERROR;
     }
@@ -56,7 +56,7 @@ hardware_interface::CallbackReturn ServoBotSystemHardware::on_init(
     if (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("ServoBotSystemHardware"), "Joint '%s' have %s command interfaces found. '%s' expected.",
+        rclcpp::get_logger("ServoSystemHardware"), "Joint '%s' have %s command interfaces found. '%s' expected.",
         joint.name.c_str(), joint.command_interfaces[0].name.c_str(),
         hardware_interface::HW_IF_VELOCITY);
       return hardware_interface::CallbackReturn::ERROR;
@@ -65,7 +65,7 @@ hardware_interface::CallbackReturn ServoBotSystemHardware::on_init(
     if (joint.state_interfaces.size() != 2)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("ServoBotSystemHardware"), "Joint '%s' has %zu state interface. 2 expected.", joint.name.c_str(),
+        rclcpp::get_logger("ServoSystemHardware"), "Joint '%s' has %zu state interface. 2 expected.", joint.name.c_str(),
         joint.state_interfaces.size());
       return hardware_interface::CallbackReturn::ERROR;
     }
@@ -73,7 +73,7 @@ hardware_interface::CallbackReturn ServoBotSystemHardware::on_init(
     if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("ServoBotSystemHardware"), "Joint '%s' have '%s' as first state interface. '%s' expected.",
+        rclcpp::get_logger("ServoSystemHardware"), "Joint '%s' have '%s' as first state interface. '%s' expected.",
         joint.name.c_str(), joint.state_interfaces[0].name.c_str(),
         hardware_interface::HW_IF_POSITION);
       return hardware_interface::CallbackReturn::ERROR;
@@ -82,7 +82,7 @@ hardware_interface::CallbackReturn ServoBotSystemHardware::on_init(
     if (joint.state_interfaces[1].name != hardware_interface::HW_IF_VELOCITY)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("ServoBotSystemHardware"), "Joint '%s' have '%s' as second state interface. '%s' expected.",
+        rclcpp::get_logger("ServoSystemHardware"), "Joint '%s' have '%s' as second state interface. '%s' expected.",
         joint.name.c_str(), joint.state_interfaces[1].name.c_str(),
         hardware_interface::HW_IF_VELOCITY);
       return hardware_interface::CallbackReturn::ERROR;
@@ -92,7 +92,7 @@ hardware_interface::CallbackReturn ServoBotSystemHardware::on_init(
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-std::vector<hardware_interface::StateInterface> ServoBotSystemHardware::export_state_interfaces()
+std::vector<hardware_interface::StateInterface> ServoSystemHardware::export_state_interfaces()
 {
   std::vector<hardware_interface::StateInterface> state_interfaces;
 
@@ -124,7 +124,7 @@ std::vector<hardware_interface::StateInterface> ServoBotSystemHardware::export_s
   return state_interfaces;
 }
 
-std::vector<hardware_interface::CommandInterface> ServoBotSystemHardware::export_command_interfaces()
+std::vector<hardware_interface::CommandInterface> ServoSystemHardware::export_command_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
 
@@ -146,32 +146,32 @@ std::vector<hardware_interface::CommandInterface> ServoBotSystemHardware::export
   return command_interfaces;
 }
 
-hardware_interface::CallbackReturn ServoBotSystemHardware::on_activate(
+hardware_interface::CallbackReturn ServoSystemHardware::on_activate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  RCLCPP_INFO(rclcpp::get_logger("ServoBotSystemHardware"), "Activating ...please wait...");
+  RCLCPP_INFO(rclcpp::get_logger("ServoSystemHardware"), "Activating ...please wait...");
 
   // connect to arduino with device, baud_rate and timeout_ms parameters
   comms_.connect(cfg_.device, cfg_.baud_rate, cfg_.timeout_ms);
 
-  RCLCPP_INFO(rclcpp::get_logger("ServoBotSystemHardware"), "Successfully activated!");
+  RCLCPP_INFO(rclcpp::get_logger("ServoSystemHardware"), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::CallbackReturn ServoBotSystemHardware::on_deactivate(
+hardware_interface::CallbackReturn ServoSystemHardware::on_deactivate(
   const rclcpp_lifecycle::State & /*previous_state*/)
 {
-  RCLCPP_INFO(rclcpp::get_logger("ServoBotSystemHardware"), "Deactivating ...please wait...");
+  RCLCPP_INFO(rclcpp::get_logger("ServoSystemHardware"), "Deactivating ...please wait...");
 
   comms_.disconnect();
 
-  RCLCPP_INFO(rclcpp::get_logger("ServoBotSystemHardware"), "Successfully deactivated!");
+  RCLCPP_INFO(rclcpp::get_logger("ServoSystemHardware"), "Successfully deactivated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::return_type ServoBotSystemHardware::read(
+hardware_interface::return_type ServoSystemHardware::read(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & period)
 {
   // get encorder values 
@@ -202,7 +202,7 @@ hardware_interface::return_type ServoBotSystemHardware::read(
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type ServoBotSystemHardware::write(
+hardware_interface::return_type ServoSystemHardware::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
 
@@ -221,4 +221,4 @@ hardware_interface::return_type ServoBotSystemHardware::write(
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(
-  demo_arm::ServoBotSystemHardware, hardware_interface::SystemInterface)
+  demo_arm::ServoSystemHardware, hardware_interface::SystemInterface)

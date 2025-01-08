@@ -4,10 +4,10 @@
     <!-- DEFINE robot properties : Links, Joints -->
     <xacro:include filename="robot_core.xacro"/>
 
-    <!-- Define the gazebo specific parameters -->
-    <xacro:include filename="gazebo_control.xacro"/>
+    <!-- Define the gazebo specific parameters and gazebo_ros2_control plugin -->
+    <!-- <xacro:include filename="gazebo_control.xacro"/> -->
 
-    <!-- Define ros2_control parameters -->
+    <!-- Define ros2_control parameters with hardware abstraction-->
     <xacro:include filename="ros2_control.xacro"/>
 
 </robot>
