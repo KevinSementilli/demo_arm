@@ -6,6 +6,6 @@ teleop_vel:
       - arm2_joint
       - arm3_joint
       - left_claw_joint
-      - right_claw_joint
+      # - right_claw_joint
     joint_speed: 0.7  # rad/sec
     claw_speed: 0.5  # rad/sec

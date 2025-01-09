@@ -17,4 +17,4 @@ vel_controller:
       - arm2_joint
       - arm3_joint
       - left_claw_joint
-      - right_claw_joint
+      # - right_claw_joint

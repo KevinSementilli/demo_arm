@@ -21,7 +21,17 @@ def generate_launch_description():
     teleop_vel_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory(package_name), 'launch/resources' ,'teleop_vel.launch.py')]), 
-            launch_arguments={'use_sim_time': 'true'}.items()
+    )
+
+    controller_config = os.path.join(
+        get_package_share_directory(package_name), 'config', 'vel_controller.yaml'
+    )
+
+    control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[controller_config],
+        output="screen",
     )
 
     # spawn the velocity controller
@@ -29,6 +39,10 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=["vel_controller"],
+        remappings=[
+            ("/vel_controller/commands", "/teleop_vel")
+        ],
+        output="screen",
     )
 
     # spawn the joint broadcaster
@@ -36,11 +50,15 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=["joint_broad"],
+        output="screen",
     )
 
     return LaunchDescription([
         rsp,
-        teleop_vel_node,
+        control_node,
+
         vel_controller_spawner,
-        joint_broad_spawner
+        joint_broad_spawner,
+
+        teleop_vel_node,
     ])
