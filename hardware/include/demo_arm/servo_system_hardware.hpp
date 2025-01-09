@@ -41,7 +41,7 @@ namespace demo_arm
   };
 
   public:
-    RCLCPP_SHARED_PTR_DEFINITIONS(ServoSystemHardware);
+    RCLCPP_SHARED_PTR_DEFINITIONS(ServoSystemHardware)
 
     hardware_interface::CallbackReturn on_init(
       const hardware_interface::HardwareInfo & info) override;

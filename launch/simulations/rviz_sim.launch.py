@@ -20,8 +20,7 @@ def generate_launch_description():
     # Include rsp.launch.py
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(
-            get_package_share_directory(package_name), 'launch', 'rsp.launch.py'
-        )),
+            get_package_share_directory(package_name), 'launch/resources', 'rsp.launch.py')),
         launch_arguments={'use_sim_time': use_sim_time}.items()  # Pass use_sim_time as an argument
     )
 

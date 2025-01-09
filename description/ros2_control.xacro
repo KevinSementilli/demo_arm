@@ -8,7 +8,7 @@
             <param name="arm1_name">arm1_joint</param>
             <param name="arm2_name">arm2_joint</param>
             <param name="arm3_name">arm3_joint</param>
-            <param name="claw_name">claw_joint</param>
+            <param name="claw_name">left_claw_joint</param>
             <param name="loop_rate">30</param>
             <param name="device">/dev/serial/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.3:1.0-port0</param>
             <param name="baud_rate">115200</param>
@@ -34,16 +34,11 @@
             <state_interface name="velocity"/>
             <state_interface name="position"/>
         </joint>
-        <joint name="claw_joint">
+        <joint name="left_claw_joint">
             <command_interface name="velocity"/>
             <state_interface name="velocity"/>
             <state_interface name="position"/>
         </joint>
-        <!-- <joint name="right_claw_joint">
-            <command_interface name="velocity"/>
-            <state_interface name="velocity"/>
-            <state_interface name="position"/>
-        </joint> -->
     </ros2_control>
 
 </robot>
