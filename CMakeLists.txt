@@ -11,7 +11,7 @@ find_package(hardware_interface REQUIRED)
 find_package(controller_manager REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
-find_package(pluginlib REQUIRED)
+find_package(pluginlib REQUIRED) 
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -19,8 +19,14 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# manually adding libserial-dev
+include_directories(/usr/include/libserial)
+link_directories(/usr/lib/aarch64-linux-gnu)
+
 # Create the shared library for hardware abstraction
-add_library(${PROJECT_NAME}_hardware SHARED
+add_library(
+  ${PROJECT_NAME}_hardware 
+  SHARED
   hardware/servo_system_hardware.cpp
 )
 
@@ -41,6 +47,9 @@ ament_target_dependencies(
   rclcpp_lifecycle
   pluginlib
 )
+
+# add the libserial library
+target_link_libraries(demo_arm_hardware /usr/lib/aarch64-linux-gnu/libserial.so)
 
 # Export hardware interface as a plugin
 pluginlib_export_plugin_description_file(hardware_interface demo_arm.xml)

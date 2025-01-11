@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <ros2_control name="ServoSystem" type="system">
+    <ros2_control name="ServoSystemHardware" type="system">
         <hardware>
             <plugin>demo_arm/ServoSystemHardware</plugin>
             <param name="rot_base_name">rot_base_joint</param>
