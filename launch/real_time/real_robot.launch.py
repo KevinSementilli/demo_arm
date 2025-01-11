@@ -6,12 +6,13 @@ from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch.actions import TimerAction
 
 def generate_launch_description():
 
     package_name='demo_arm'
 
-    # launch robot_state_publisher with sim_time set to true
+    # launch robot_state_publisher 
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory(package_name), 'launch/resources' ,'rsp.launch.py')]), 
@@ -53,12 +54,17 @@ def generate_launch_description():
         output="screen",
     )
 
+    delay_controllers = TimerAction(
+        period=10.0,
+        actions=[
+            vel_controller_spawner,
+            joint_broad_spawner,
+        ]
+    )
+
     return LaunchDescription([
         rsp,
         control_node,
-
-        vel_controller_spawner,
-        joint_broad_spawner,
-
         teleop_vel_node,
+        delay_controllers,
     ])
