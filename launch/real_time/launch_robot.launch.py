@@ -73,13 +73,19 @@ def generate_launch_description():
         output="screen",
     )
 
+    delayed_joint_broad_spawner = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=controller_manager,
+            on_start=[joint_broad_spawner],
+        )
+    )
+
     return LaunchDescription([
         rsp,
-        control_node,
-
-        vel_controller_spawner,
-        joint_broad_spawner,
+        delayed_controller_manager,
+        
+        delayed_vel_controller_spawner,
+        delayed_joint_broad_spawner,
 
         teleop_vel_node,
-        delay_controllers,
     ])
