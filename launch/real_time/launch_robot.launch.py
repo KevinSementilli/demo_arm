@@ -3,8 +3,12 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import Command
+from launch.actions import RegisterEventHandler
+from launch.event_handlers import OnProcessStart
+
 from launch_ros.actions import Node
 
 def generate_launch_description():
@@ -27,11 +31,19 @@ def generate_launch_description():
         get_package_share_directory(package_name), 'config', 'vel_controller.yaml'
     )
 
-    control_node = Node(
+    robot_description = Command({'ros2 param get --hide-type /robot_state_publisher robot_description'})
+
+    controller_manager = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[controller_config],
+        parameters=[{'robot_description' : robot_description},
+                    controller_config],
         output="screen",
+    )
+
+    delayed_controller_manager = TimerAction(
+        period=3.0, 
+        actions={controller_manager}
     )
 
     # spawn the velocity controller
@@ -45,6 +57,13 @@ def generate_launch_description():
         output="screen",
     )
 
+    delayed_vel_controller_spawner = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=controller_manager,
+            on_start=[vel_controller_spawner],
+        )
+    )
+
     # spawn the joint broadcaster
     joint_broad_spawner = Node(
         package="controller_manager",
@@ -53,12 +72,19 @@ def generate_launch_description():
         output="screen",
     )
 
+    delayed_joint_broad_spawner = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=controller_manager,
+            on_start=[joint_broad_spawner],
+        )
+    )
+
     return LaunchDescription([
         rsp,
-        control_node,
+        delayed_controller_manager,
 
-        vel_controller_spawner,
-        joint_broad_spawner,
+        delayed_vel_controller_spawner,
+        delayed_joint_broad_spawner,
 
         teleop_vel_node,
     ])

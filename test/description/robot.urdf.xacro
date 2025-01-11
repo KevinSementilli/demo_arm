@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="robot_arm">
+
+    <!-- DEFINE robot properties : Links, Joints -->
+    <xacro:include filename="robot_core.xacro"/>
+
+    <!-- Define the gazebo specific parameters and gazebo_ros2_control plugin -->
+    <xacro:include filename="gazebo_control.xacro"/>
+
+    <!-- Define ros2_control parameters with hardware abstraction-->
+    <!-- <xacro:include filename="ros2_control.xacro"/> -->
+
+</robot>

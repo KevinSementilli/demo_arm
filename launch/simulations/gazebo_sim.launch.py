@@ -1,31 +1,32 @@
 import os
-
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch.event_handlers import OnShutdown
+from launch.actions import ExecuteProcess
 
 
 def generate_launch_description():
 
-    package_name='demo_arm'
+    package_name = 'demo_arm'
 
-    # launch robot_state_publisher with sim_time set to true
+    # Launch robot_state_publisher with sim_time set to true
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [os.path.join(get_package_share_directory(package_name), 'launch', 'resources' ,'rsp.launch.py')]), 
+            [os.path.join(get_package_share_directory(package_name), 'launch/resources', 'rsp.launch.py')]), 
             launch_arguments={'use_sim_time': 'true'}.items()
     )
 
-    # launch the gazebo launch file provided with the gazebo_ros package
+    # Launch the Gazebo launch file provided with the gazebo_ros package
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py')]),
     )
 
-    # Run the spawner node from the gazebo_ros package. The entity name doesn't really matter if you only have a single robot.
+    # Run the spawner node from the gazebo_ros package
     spawn_entity = Node(
         package='gazebo_ros', 
         executable='spawn_entity.py',
@@ -33,7 +34,7 @@ def generate_launch_description():
         output='screen'
     )
 
-    # spawn the velocity controller
+    # Spawn the velocity controller
     joint_vel_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -46,11 +47,32 @@ def generate_launch_description():
         arguments=["joint_broad"],
     )
 
+    # Delay the controllers by 30 seconds
+    delayed_controllers = TimerAction(
+        period=30.0,  # 30-second delay
+        actions=[
+            joint_vel_spawner,
+            joint_broad_spawner,
+        ]
+    )
+
+    # Register shutdown event handler to clean up processes
+    cleanup = RegisterEventHandler(
+        OnShutdown(
+            on_shutdown=[
+                ExecuteProcess(cmd=['pkill', 'gzserver'], shell=False),
+                ExecuteProcess(cmd=['pkill', 'gzclient'], shell=False),
+                ExecuteProcess(cmd=['pkill', 'ros2'], shell=False),
+            ]
+        )
+    )
 
     return LaunchDescription([
         rsp,
+
         gazebo,
         spawn_entity,
-        joint_vel_spawner,
-        joint_broad_spawner
+
+        delayed_controllers,  # Add delayed controllers
+        cleanup,  # Add the cleanup event handler
     ])
