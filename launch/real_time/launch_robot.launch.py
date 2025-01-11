@@ -10,12 +10,13 @@ from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessStart
 
 from launch_ros.actions import Node
+from launch.actions import TimerAction
 
 def generate_launch_description():
 
     package_name='demo_arm'
 
-    # launch robot_state_publisher with sim_time set to true
+    # launch robot_state_publisher 
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory(package_name), 'launch/resources' ,'rsp.launch.py')]), 
@@ -72,19 +73,13 @@ def generate_launch_description():
         output="screen",
     )
 
-    delayed_joint_broad_spawner = RegisterEventHandler(
-        event_handler=OnProcessStart(
-            target_action=controller_manager,
-            on_start=[joint_broad_spawner],
-        )
-    )
-
     return LaunchDescription([
         rsp,
-        delayed_controller_manager,
+        control_node,
 
-        delayed_vel_controller_spawner,
-        delayed_joint_broad_spawner,
+        vel_controller_spawner,
+        joint_broad_spawner,
 
         teleop_vel_node,
+        delay_controllers,
     ])
