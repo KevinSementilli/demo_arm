@@ -31,7 +31,7 @@ hardware_interface::CallbackReturn ServoSystemHardware::on_init(
   cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
   cfg_.device = info_.hardware_parameters["device"];
   cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]); 
-  cfg_.timeout_ms = std::stoi(info_.hardware_parameters["timout_ms"]);
+  cfg_.timeout_ms = std::stoi(info_.hardware_parameters["timeout_ms"]);
   // cfg_.enc_counts_per_rev = std::stoi(info_.hardware_parameters["enc_counts_per_rev"]);
 
   rot_base_.setup(cfg_.rot_base_name);
@@ -129,19 +129,19 @@ std::vector<hardware_interface::CommandInterface> ServoSystemHardware::export_co
   std::vector<hardware_interface::CommandInterface> command_interfaces;
 
   command_interfaces.emplace_back(hardware_interface::CommandInterface(
-    rot_base_.name, hardware_interface::HW_IF_POSITION, &rot_base_.cmd));
+    rot_base_.name, hardware_interface::HW_IF_VELOCITY, &rot_base_.cmd));
 
   command_interfaces.emplace_back(hardware_interface::CommandInterface(
-    arm1_.name, hardware_interface::HW_IF_POSITION, &arm1_.cmd));
+    arm1_.name, hardware_interface::HW_IF_VELOCITY, &arm1_.cmd));
 
   command_interfaces.emplace_back(hardware_interface::CommandInterface(
-    arm2_.name, hardware_interface::HW_IF_POSITION, &arm2_.cmd));
+    arm2_.name, hardware_interface::HW_IF_VELOCITY, &arm2_.cmd));
 
   command_interfaces.emplace_back(hardware_interface::CommandInterface(
-    arm3_.name, hardware_interface::HW_IF_POSITION, &arm3_.cmd));
+    arm3_.name, hardware_interface::HW_IF_VELOCITY, &arm3_.cmd));
 
   command_interfaces.emplace_back(hardware_interface::CommandInterface(
-    claw_.name, hardware_interface::HW_IF_POSITION, &claw_.cmd));
+    claw_.name, hardware_interface::HW_IF_VELOCITY, &claw_.cmd));
 
   return command_interfaces;
 }

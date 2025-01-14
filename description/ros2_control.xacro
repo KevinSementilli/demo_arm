@@ -12,32 +12,32 @@
             <param name="loop_rate">30</param>
             <param name="device">/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0</param>
             <param name="baud_rate">115200</param>
-            <param name="timeout">1000</param>
+            <param name="timeout_ms">1000</param>
         </hardware>
         <joint name="rot_base_joint">
             <command_interface name="velocity"/>
-            <state_interface name="velocity"/>
             <state_interface name="position"/>
+            <state_interface name="velocity"/>
         </joint>
         <joint name="arm1_joint">
             <command_interface name="velocity"/>
-            <state_interface name="velocity"/>
             <state_interface name="position"/>
+            <state_interface name="velocity"/>
         </joint>
         <joint name="arm2_joint">
             <command_interface name="velocity"/>
-            <state_interface name="velocity"/>
             <state_interface name="position"/>
+            <state_interface name="velocity"/>
         </joint>
         <joint name="arm3_joint">
-           <command_interface name="velocity"/>
-            <state_interface name="velocity"/>
+            <command_interface name="velocity"/>
             <state_interface name="position"/>
+            <state_interface name="velocity"/>
         </joint>
         <joint name="left_claw_joint">
             <command_interface name="velocity"/>
-            <state_interface name="velocity"/>
             <state_interface name="position"/>
+            <state_interface name="velocity"/>
         </joint>
     </ros2_control>
 
