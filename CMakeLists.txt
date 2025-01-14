@@ -1,17 +1,23 @@
-cmake_minimum_required(VERSION 3.8)
-project(demo_arm)
+cmake_minimum_required(VERSION 3.16)
+project(demo_arm LANGUAGES CXX)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 # Find dependencies
+set(THIS_PACKAGE_INCLUDE_DEPENDS
+  hardware_interface
+  pluginlib
+  rclcpp
+  rclcpp_lifecycle
+  controller_manager
+)
+
 find_package(ament_cmake REQUIRED)
-find_package(hardware_interface REQUIRED)
-find_package(controller_manager REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rclcpp_lifecycle REQUIRED)
-find_package(pluginlib REQUIRED) 
+foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
+  find_package(${Dependency} REQUIRED)
+endforeach()
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -20,75 +26,60 @@ if(BUILD_TESTING)
 endif()
 
 # manually adding libserial-dev
-include_directories(/usr/include/libserial)
-link_directories(/usr/lib/aarch64-linux-gnu)
+# include_directories(/usr/include/libserial)
+# link_directories(/usr/lib/aarch64-linux-gnu)
 
 # Create the shared library for hardware abstraction
 add_library(
-  ${PROJECT_NAME}_hardware 
+  demo_arm 
   SHARED
   hardware/servo_system_hardware.cpp
 )
 
 # Set include directories
-target_include_directories(
-  ${PROJECT_NAME}_hardware
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/hardware/include>
-    $<INSTALL_INTERFACE:include>
+target_compile_features(demo_arm PUBLIC cxx_std_17)
+target_include_directories(demo_arm PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
+    $<INSTALL_INTERFACE:include/demo_arm>
 )
 
 # Link dependencies
 ament_target_dependencies(
-  ${PROJECT_NAME}_hardware
-  hardware_interface
-  controller_manager
-  rclcpp
-  rclcpp_lifecycle
-  pluginlib
+  demo_arm PUBLIC
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
 # add the libserial library
-target_link_libraries(demo_arm_hardware /usr/lib/aarch64-linux-gnu/libserial.so)
+# target_link_libraries(demo_arm /usr/lib/aarch64-linux-gnu/libserial.so)
+target_link_libraries(demo_arm PUBLIC serial)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE "DEMO_ARM_BUILDING_DLL")
 
 # Export hardware interface as a plugin
 pluginlib_export_plugin_description_file(hardware_interface demo_arm.xml)
 
-# Install the library and headers
+# INSTALL
 install(
-  TARGETS ${PROJECT_NAME}_hardware
-  EXPORT ${PROJECT_NAME}_export
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
-install(
-  DIRECTORY hardware/include/demo_arm/
+  DIRECTORY hardware/include/
   DESTINATION include/demo_arm
 )
-
-# Install plugin description file
-install(
-  FILES demo_arm.xml
-  DESTINATION share/${PROJECT_NAME}
-)
-
-# Install other resources
 install(
   DIRECTORY config description launch meshes
-  DESTINATION share/${PROJECT_NAME}
+  DESTINATION share/demo_arm
+)
+install(TARGETS demo_arm
+  EXPORT export_demo_arm
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+endif()
+
 # Export targets and dependencies
-ament_export_targets(${PROJECT_NAME}_export HAS_LIBRARY_TARGET)
-ament_export_dependencies(
-  hardware_interface
-  controller_manager
-  pluginlib
-  rclcpp
-  rclcpp_lifecycle
-)
+ament_export_targets(export_demo_arm HAS_LIBRARY_TARGET)
+ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 
 ament_package()

@@ -2,15 +2,11 @@
 
 #include <chrono>
 #include <cmath>
-#include <cstddef>
-#include <iomanip>
 #include <limits>
 #include <memory>
-#include <sstream>
 #include <vector>
-#include <iostream>
 
-#include "hardware_interface/lexical_casts.hpp"
+// #include "hardware_interface/lexical_casts.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 
@@ -23,6 +19,7 @@ hardware_interface::CallbackReturn ServoSystemHardware::on_init(
     hardware_interface::SystemInterface::on_init(info) !=
     hardware_interface::CallbackReturn::SUCCESS)
   {
+    RCLCPP_ERROR(rclcpp::get_logger("ServoSystemHardware"), "info Failed!");
     return hardware_interface::CallbackReturn::ERROR;
   }
 
@@ -42,6 +39,8 @@ hardware_interface::CallbackReturn ServoSystemHardware::on_init(
   arm2_.setup(cfg_.arm2_name);
   arm3_.setup(cfg_.arm3_name);
   claw_.setup(cfg_.claw_name);
+
+  RCLCPP_INFO(rclcpp::get_logger("ServoSystemHardware"), "info passed successfully!");
 
   for (const hardware_interface::ComponentInfo & joint : info_.joints)
   {

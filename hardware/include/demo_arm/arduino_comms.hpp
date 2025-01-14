@@ -1,5 +1,5 @@
-#ifndef DIFFDRIVE_ARDUINO_ARDUINO_COMMS_HPP
-#define DIFFDRIVE_ARDUINO_ARDUINO_COMMS_HPP
+#ifndef DEMO_ARM_ARDUINO_COMMAS_HPP
+#define DEMO_ARM_ARDUINO_COMMAS_HPP
 
 // #include <cstring>
 #include <sstream>
@@ -120,4 +120,4 @@ private:
     int timeout_ms_;
 };
 
-#endif // DIFFDRIVE_ARDUINO_ARDUINO_COMMS_HPP
+#endif // DEMO_ARM_ARDUINO_COMMAS_HPP
