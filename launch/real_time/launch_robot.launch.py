@@ -10,7 +10,7 @@ from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessStart
 
 from launch_ros.actions import Node
-
+from launch.actions import TimerAction
 
 def generate_launch_description():
 
@@ -37,10 +37,8 @@ def generate_launch_description():
     controller_manager = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[
-            {'robot_description' : robot_description},
-             controller_config
-        ],
+        parameters=[{'robot_description' : robot_description},
+                    controller_config],
         output="screen",
     )
 

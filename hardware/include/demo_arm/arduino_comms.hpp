@@ -89,16 +89,48 @@ public:
     std::string response = send_msg("e\r");
 
     std::string delimiter = " ";
-    size_t del_pos = response.find(delimiter);
-    std::string token_1 = response.substr(0, del_pos);
-    std::string token_2 = response.substr(del_pos + delimiter.length());
+    size_t del_pos;
+    std::string token;
 
-    val_1 = std::atoi(token_1.c_str());
-    val_2 = std::atoi(token_2.c_str());
-    val_3 = std::atoi(token_2.c_str());
-    val_4 = std::atoi(token_2.c_str());
-    val_5 = std::atoi(token_2.c_str());
+    // Array to hold integer values
+    int values[5] = {0};
+    
+    for (int i = 0; i < 5; i++) {
+        del_pos = response.find(delimiter);
+        if (del_pos != std::string::npos) {
+            // Extract token up to the delimiter
+            token = response.substr(0, del_pos);
+            response.erase(0, del_pos + delimiter.length()); // Remove processed part of the response
+        } else {
+            // Last token (or malformed response)
+            token = response;
+            response.clear();
+        }
+
+        // Convert token to integer and store it
+        values[i] = std::atoi(token.c_str());
+    }
+
+    // Assign extracted values to reference variables
+    val_1 = values[0];
+    val_2 = values[1];
+    val_3 = values[2];
+    val_4 = values[3];
+    val_5 = values[4];
   }
+
+  // void read_encoder_values(int &val_1, int &val_2)
+  // {
+  //   std::string response = send_msg("e\r");
+
+  //   std::string delimiter = " ";
+  //   size_t del_pos = response.find(delimiter);
+  //   std::string token_1 = response.substr(0, del_pos);
+  //   std::string token_2 = response.substr(del_pos + delimiter.length());
+
+  //   val_1 = std::atoi(token_1.c_str());
+  //   val_2 = std::atoi(token_2.c_str());
+  // }
 
   // !!!! CHANGE ME !!!!!! 
   void set_motor_values(int val_1, int val_2, int val_3, int val_4, int val_5)
