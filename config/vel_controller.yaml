@@ -17,4 +17,12 @@ vel_controller:
       - arm2_joint
       - arm3_joint
       - left_claw_joint
-      # - right_claw_joint
+
+joint_broad:
+  ros__parameters:
+    joints:
+      - rot_base_joint
+      - arm1_joint
+      - arm2_joint
+      - arm3_joint
+      - left_claw_joint

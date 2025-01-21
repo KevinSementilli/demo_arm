@@ -32,13 +32,13 @@ def generate_launch_description():
         get_package_share_directory(package_name), 'config', 'vel_controller.yaml'
     )
 
-    robot_description = Command({'ros2 param get --hide-type /robot_state_publisher robot_description'})
-
+    # run the ros2_control_node to handle controller spawning and loading
+    # remap topic to /robot_description
     controller_manager = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[{'robot_description' : robot_description},
-                    controller_config],
+        parameters=[controller_config],
+        remappings=[("/controller_manager/robot_description", "robot_description")],
         output="screen",
     )
 
@@ -52,9 +52,6 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=["vel_controller"],
-        remappings=[
-            ("/vel_controller/commands", "/teleop_vel")
-        ],
         output="screen",
     )
 

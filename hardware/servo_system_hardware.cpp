@@ -177,6 +177,8 @@ hardware_interface::return_type ServoSystemHardware::read(
   // get encorder values 
   comms_.read_encoder_values(rot_base_.enc, arm1_.enc, arm2_.enc, arm3_.enc, claw_.enc);
 
+  RCLCPP_INFO(rclcpp::get_logger("ServoSystemHardware"), "encoder received");
+
   double delta_sec = period.seconds();
 
   double pos_prev = rot_base_.pos;
