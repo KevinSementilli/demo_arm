@@ -177,7 +177,9 @@ hardware_interface::return_type ServoSystemHardware::read(
   // get encorder values 
   comms_.read_encoder_values(rot_base_.enc, arm1_.enc, arm2_.enc, arm3_.enc, claw_.enc);
 
-  RCLCPP_INFO(rclcpp::get_logger("ServoSystemHardware"), "encoder received");
+  std::stringstream feedback;
+  feedback << rot_base_.enc << " " << arm1_.enc << " " << arm2_.enc << " " << arm3_.enc << " " << claw_.enc;
+  RCLCPP_INFO(rclcpp::get_logger("ServoSystemHardware"), feedback.str().c_str());
 
   double delta_sec = period.seconds();
 
@@ -208,13 +210,11 @@ hardware_interface::return_type ServoSystemHardware::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
 
-  int rot_base_cmd = rot_base_.cmd;
-  int arm1_cmd = arm1_.cmd;
-  int arm2_cmd = arm2_.cmd;
-  int arm3_cmd = arm3_.cmd;
-  int claw_cmd = claw_.cmd;
+  // std::stringstream commands;
+  // commands << rot_base_.cmd << " " << arm1_.cmd << " " << arm2_.cmd << " " << arm3_.cmd << " " << claw_.cmd;
+  // RCLCPP_INFO(rclcpp::get_logger("ServoSystemHardware"), commands.str().c_str());
 
-  comms_.set_motor_values(rot_base_cmd, arm1_cmd, arm2_cmd, arm3_cmd, claw_cmd);
+  comms_.set_motor_values(rot_base_.cmd, arm1_.cmd, arm2_.cmd, arm3_.cmd, claw_.cmd);
 
   return hardware_interface::return_type::OK;
 }
