@@ -2,48 +2,29 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <xacro:include filename="inertial_macros.xacro"/>
-
-    <material name="white">
-        <color rgba="1 1 1 1"/>
-    </material>
-
-    <material name="orange">
-        <color rgba="1 0.3 0.1 1"/>
-    </material>
-
-    <material name="blue">
-        <color rgba="0.2 0.2 1 1"/>
-    </material>
-
-    <material name="black">
-        <color rgba="0 0 0 1"/>
-    </material>
-
-    <material name="red">
-        <color rgba="1 0 0 1"/>
-    </material>
+    <xacro:include filename="property_list.xacro"/>
     
-    <!-- ___________________________________ colors ________________________________ -->
-    
+    <!-- _________________________________ Base ___________________________ -->
+
     <link name="world">
     </link>
 
     <link name="base">
         <visual>
-            <origin xyz="0 0 0.0225"/>
+            <origin xyz="0 0 ${base_radius/2}"/>
             <geometry>
-                <cylinder radius="0.0475" length="0.045"/>
+                <cylinder radius="${base_radius}" length="${base_length}"/>
             </geometry>
             <material name="blue"/>
         </visual>
         <collision>
-            <origin xyz="0 0 0.0225"/>
+            <origin xyz="0 0 ${base_radius/2}"/>
             <geometry>
-                <cylinder radius="0.0475" length="0.045"/>
+                <cylinder radius="${base_radius}" length="${base_length}"/>
             </geometry>
         </collision>
-        <xacro:inertial_cylinder mass="0.5" radius="0.0475" length="0.045">
-            <origin xyz="0 0 0.0225" rpy="0 0 0"/>
+        <xacro:inertial_cylinder mass="${base_mass}" radius="${base_radius}" length="${base_length}">
+            <origin xyz="0 0 ${base_radius/2}" rpy="0 0 0"/>
         </xacro:inertial_cylinder>
     </link>
 
@@ -53,89 +34,310 @@
         <origin xyz="0 0 0"/>
     </joint>
 
-    <!-- _________________________________ Base ___________________________ -->
-
+    
+    <!-- __________________________ Rotating Base ___________________________ -->
 
     <joint name="rot_base_joint" type="revolute">
         <parent link="base"/>
         <child link="rot_base"/>
-        <origin xyz="0 0 0.045"/>
+        <origin xyz="0 0 ${base_length}"/>
         <axis xyz="0 0 1"/>
         <limit lower="-${pi/2}" upper="${pi/2}" effort="100" velocity="0.2"/>
+        <dynamics damping="0.1" friction="0.01"/>
     </joint>
 
     <link name="rot_base">
         <visual>
-            <origin xyz="0 0 0.005"/>
+            <origin xyz="0 0 ${rot_base_length/2}"/>
             <geometry>
-                <cylinder radius="0.0475" length="0.01"/>
+                <cylinder radius="${rot_base_radius}" length="${rot_base_length}"/>
             </geometry>
             <material name="black"/>
         </visual>
         <collision>
-            <origin xyz="0 0 0.005"/>
+            <origin xyz="0 0 ${rot_base_length/2}"/>
             <geometry>
-                <cylinder radius="0.0475" length="0.01"/>
+                <cylinder radius="${rot_base_radius}" length="${rot_base_length}"/>
             </geometry>
         </collision>
-        <xacro:inertial_cylinder mass="0.2" radius="0.0475" length="0.01">
-            <origin xyz="0 0 0.005" rpy="0 0 0"/>
+        <xacro:inertial_cylinder mass="${rot_base_mass}" radius="${rot_base_radius}" length="${rot_base_length}">
+            <origin xyz="0 0 ${rot_base_length/2}" rpy="0 0 0"/>
         </xacro:inertial_cylinder>
     </link>
 
     <joint name="arm1_motor_joint" type="fixed">
         <parent link="rot_base"/>
         <child link="arm1_motor"/>
-        <origin xyz="0 0 0.01"/>
+        <origin xyz="0 0 ${rot_base_length}"/>
     </joint>
 
     <link name="arm1_motor">
         <visual>
+            <origin xyz="0 0 ${arm1_motor_z/2}"/>
+            <geometry>
+                <box size="${arm1_motor_x} ${arm1_motor_y} ${arm1_motor_z}"/>
+            </geometry>
+            <material name="blue"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 ${arm1_motor_z/2}"/>
+            <geometry>
+                <box size="${arm1_motor_x} ${arm1_motor_y} ${arm1_motor_z}"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="${arm1_motor_mass}" x="${arm1_motor_x}"  y="${arm1_motor_x=y}" z="${arm1_motor_z}">
+            <origin xyz="0 0 ${arm1_motor_z/2}" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <!-- ____________________________ Arm1 ______________________ -->
+
+    <link name="arm1_bracket">
+        <visual>
+            <origin xyz="${arm1_bracket_origin}" rpy="${pi} 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm1_bracket.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="${arm1_bracket_origin}" rpy="${pi} 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm1_bracket.stl" scale="0.001 0.001 0.001"/> 
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="${arm1_bracket_mass}" x="${arm1_bracket_x}"  y="${arm1_bracket_y}" z="${arm1_bracket_z}">
+            <origin xyz="-${arm1_bracket_x} 0 ${arm1_bracket_z}" rpy="${pi} 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <joint name="arm1_joint" type="revolute">
+        <parent link="arm1_motor"/>
+        <child link="arm1_bracket"/>
+        <origin xyz="${arm1_joint_origin}" rpy="0 0 0"/>
+        <axis xyz="1 0 0" rpy="0 0 0"/>
+        <limit lower="-${pi/2}" upper="${pi/2}" effort="100" velocity="0.2"/>
+        <dynamics damping="0.1" friction="0.01"/>
+    </joint>
+
+    <!-- ___________________________ Arm2 _______________________________ -->
+
+    <link name="arm2_bracket">
+        <visual>
+            <origin xyz="${arm2_bracket_origin}"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm2_bracket.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="${arm2_bracket_origin}"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm2_bracket.stl" scale="0.001 0.001 0.001"/> 
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="${arm2_bracket_mass}" x="${arm2_bracket_x}"  y="${arm2_bracket_y}" z="${arm2_bracket_z}">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <joint name="arm_bracket_joint" type="fixed">
+        <parent link="arm1_bracket"/>
+        <child link="arm2_bracket"/>
+        <origin xyz="-${arm1_bracket_x/2} 0 ${arm1_bracket_z}"/>
+    </joint>
+
+    <link name="arm2_motor">
+        <visual>
+            <origin xyz="-${arm1_motor_x/2} 0 -${arm1_motor_z/4}"/>
+            <geometry>
+                <box size="${arm2_motor_x} ${arm2_motor_y} ${arm2_motor_z}"/>
+            </geometry>
+            <material name="blue"/>
+        </visual>
+        <collision>
+            <origin xyz="-${arm1_motor_x/2} 0 -${arm1_motor_z/4}"/>
+            <geometry>
+                <box size="${arm2_motor_x} ${arm2_motor_y} ${arm2_motor_z}"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="${arm2_motor_mass}" x="${arm2_motor_x}"  y="${arm2_motor_y}" z="${arm2_motor_z}">
+            <origin xyz="-${arm1_motor_x/2} 0 -${arm1_motor_z/4}" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <joint name="arm2_joint" type="revolute">
+        <parent link="arm2_bracket"/>
+        <child link="arm2_motor"/>
+        <origin xyz="${arm2_joint_origin}"/>
+        <axis xyz="1 0 0" rpy="0 0 0"/>
+        <limit lower="-${pi/2}" upper="${pi/2}" effort="100" velocity="0.2"/>
+        <dynamics damping="0.1" friction="0.01"/>
+    </joint>
+
+    <link name="arm2_stem">
+        <visual>
+            <origin xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm2_stem.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="white"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm2_stem.stl" scale="0.001 0.001 0.001"/> 
+            </geometry>
+        </collision>
+        <xacro:inertial_cylinder mass="${arm2_stem_mass}" radius="${arm2_stem_radius}" length="${arm2_stem_length}">
+            <origin xyz="0 0 ${arm2_stem_length/2}" rpy="0 0 0"/>
+        </xacro:inertial_cylinder>
+    </link>
+
+    <joint name="arm2_stem_joint" type="fixed">
+        <parent link="arm2_motor"/>
+        <child link="arm2_stem"/>
+        <origin xyz="-${arm2_motor_x/2} 0 ${arm2_motor_z/4}"/>
+    </joint>
+
+    <!-- _____________________________ Arm3 ______________________________ -->
+
+    <link name="arm3_motor">
+        <visual>
+            <origin xyz="0 0 0.02"/>
+            <geometry>
+                <box size="0.048 0.025 0.04"/>
+            </geometry>
+            <material name="blue"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0.02"/>
+            <geometry>
+                <box size="0.048 0.025 0.04"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.5" x="0.048"  y="0.025" z="0.04">
+            <origin xyz="0 0 0.02" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <joint name="arm3_motor_joint" type="fixed">
+        <parent link="arm2_stem"/>
+        <child link="arm3_motor"/>
+        <origin xyz="0 0 0.07"/>
+    </joint>
+
+    <link name="arm3_bracket">
+        <visual>
+            <origin xyz="-0.05 0.0125 0.0295" rpy="${pi} 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm3_bracket.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="-0.05 0.0125 0.0295" rpy="${pi} 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/arm3_bracket.stl" scale="0.001 0.001 0.001"/> 
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.008" x="0.053"  y="0.025" z="0.042">
+            <origin xyz="-0.025 0 0.0295" rpy="${pi} 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <joint name="arm3_joint" type="revolute">
+        <parent link="arm3_motor"/>
+        <child link="arm3_bracket"/>
+        <origin xyz="0.024 0 0.035"/>
+        <axis xyz="1 0 0" rpy="0 0 0"/>
+        <limit lower="-${pi/2}" upper="${pi/2}" effort="100" velocity="0.2"/>
+        <dynamics damping="0.1" friction="0.01"/>
+    </joint>
+
+    <!-- ______________________________ Claw ___________________________________ -->
+
+    <link name="claw_base">
+        <visual>
             <origin xyz="0 0 0.015"/>
             <geometry>
-                <box size="0.064 0.04 0.03"/>
+                <box size="0.065 0.025 0.03"/>
             </geometry>
             <material name="blue"/>
         </visual>
         <collision>
             <origin xyz="0 0 0.015"/>
             <geometry>
-                <box size="0.064 0.04 0.03"/>
+                <box size="0.065 0.025 0.03"/>
             </geometry>
         </collision>
-        <xacro:inertial_box mass="0.5" x="0.064"  y="0.04" z="0.03">
+        <xacro:inertial_box mass="0.5" x="0.065"  y="0.025" z="0.03">
             <origin xyz="0 0 0.015" rpy="0 0 0"/>
         </xacro:inertial_box>
     </link>
 
-    <!-- ____________________________ Arm1 ______________________ -->
+    <joint name="claw_base_joint" type="fixed">
+        <parent link="arm3_bracket"/>
+        <child link="claw_base"/>
+        <origin xyz="-0.024 0 0.0295"/>
+    </joint>
 
-    <link name="arm1">
+    <link name="left_claw">
         <visual>
-            <origin xyz="0 0 0"/>
+            <origin xyz="0 0.01 0" rpy="${pi/2} 0 0"/>
             <geometry>
-                <box x="" y="" z=""/>
+                <mesh filename="package://demo_arm/meshes/right_claw.stl" scale="0.001 0.001 0.001"/>
             </geometry>
+            <material name="black"/>
         </visual>
         <collision>
-            <origin xyz="0 0 0"/>
+            <origin xyz="0 0.01 0" rpy="${pi/2} 0 0"/>
             <geometry>
-                <box x="" y="" z=""/>
+                <mesh filename="package://demo_arm/meshes/right_claw.stl" scale="0.001 0.001 0.001"/> 
             </geometry>
         </collision>
-        <xacro:inertial_box mass="0.5" x="0.064"  y="0.04" z="0.03">
-            <origin xyz="0 0 0.015" rpy="0 0 0"/>
+        <xacro:inertial_box mass="0.008" x="0.015"  y="0.02" z="0.03">
+            <origin xyz="0.0075 0 0.015" rpy="${pi/2} 0 0"/>
         </xacro:inertial_box>
     </link>
 
-    <joint name="arm1_joint" type="revolute">
-        <parent link="arm1_motor"/>
-        <child link="arm1"/>
-        <origin xyz="0 0 0"/>
-        <axis xyz="0 0 0"/>
-        <limits lower="" upper="" effort="" velocity=""/>
+    <joint name="left_claw_joint" type="prismatic">
+        <parent link="claw_base"/>
+        <child link="left_claw"/>
+        <origin xyz="0 0.0025 0.03"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="0" upper="0.015" effort="100" velocity="0.2"/>
+        <dynamics damping="0.1" friction="0.01"/>
     </joint>
+
+    <link name="right_claw">
+        <visual>
+            <origin xyz="-0.015 0.01 0" rpy="${pi/2} 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/left_claw.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin xyz="-0.015 0.01 0" rpy="${pi/2} 0 0"/>
+            <geometry>
+                <mesh filename="package://demo_arm/meshes/left_claw.stl" scale="0.001 0.001 0.001"/> 
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.008" x="0.015"  y="0.02" z="0.03">
+            <origin xyz="-0.0075 0 0.015" rpy="${pi/2} 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <joint name="right_claw_joint" type="prismatic">
+        <parent link="claw_base"/>
+        <child link="right_claw"/>
+        <origin xyz="0 0.0025 0.03" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-0.015" upper="0" effort="100" velocity="0.2"/>
+        <mimic joint="left_claw_joint" multiplier="-1.0"/>
+        <dynamics damping="0.1" friction="0.01"/>        
+    </joint>
+
     
-
-
 </robot>

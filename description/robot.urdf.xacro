@@ -1,13 +1,27 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="robot_arm">
 
-    <!-- DEFINE robot properties : Links, Joints -->
-    <xacro:include filename="robot_core.xacro"/>
+    <!-- Set control_mode to 'sim', 'real', or 'gazebo' -->
+    <xacro:arg name="use_real_time" default="false"/>
+    <xacro:arg name="sim_mode" default="false"/>
 
-    <!-- Define the gazebo specific parameters and gazebo_ros2_control plugin -->
-    <!-- <xacro:include filename="gazebo_control.xacro"/> -->
+    <!-- Robot links and joints -->
+    <xacro:include filename="robot_core.xacro" />
 
-    <!-- Define ros2_control parameters with hardware abstraction-->
-    <xacro:include filename="ros2_control.xacro"/>
+    <xacro:if value="$(arg use_real_time)">
+        <xacro:include filename="servo_control.xacro" />
+    </xacro:if>
 
+    <xacro:unless value="$(arg use_real_time)">
+
+        <xacro:if value="$(arg sim_mode)">
+            <xacro:include filename="gazebo_control.xacro" />
+        </xacro:if>
+
+        <xacro:unless value="$(arg sim_mode)">
+            <xacro:include filename="sim_control.xacro" />
+        </xacro:unless>
+        
+    </xacro:unless>
+    
 </robot>

@@ -17,7 +17,7 @@ def generate_launch_description():
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory(package_name), 'launch/resources', 'rsp.launch.py')]), 
-            launch_arguments={'use_sim_time': 'true'}.items()
+            launch_arguments={'use_sim_time': 'true', 'control_mode': 'gazebo'}.items()
     )
 
     # Launch the Gazebo launch file provided with the gazebo_ros package
@@ -73,6 +73,6 @@ def generate_launch_description():
         gazebo,
         spawn_entity,
 
-        delayed_controllers,  # Add delayed controllers
+        # delayed_controllers,  # Add delayed controllers
         cleanup,  # Add the cleanup event handler
     ])

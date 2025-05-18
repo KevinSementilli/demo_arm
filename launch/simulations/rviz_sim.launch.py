@@ -16,12 +16,16 @@ def generate_launch_description():
 
     # Declare use_sim_time argument
     use_sim_time = LaunchConfiguration('use_sim_time')
+    use_real_time = LaunchConfiguration('use_real_time')
 
     # Include rsp.launch.py
     rsp = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(
             get_package_share_directory(package_name), 'launch/resources', 'rsp.launch.py')),
-        launch_arguments={'use_sim_time': use_sim_time}.items()  # Pass use_sim_time as an argument
+        launch_arguments={
+            'use_sim_time': use_sim_time,
+            'use_real_time': use_real_time
+        }.items()  # Pass use_sim_time as an argument
     )
 
     # Joint State Publisher GUI Node
@@ -50,8 +54,13 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             'use_sim_time',
-            default_value='false',
-            description='Use sim time if true'
+            default_value='False',
+            description='Use sim time if true'),
+    
+        DeclareLaunchArgument(
+            'use_real_time',
+            default_value='False',
+            description="Control mode: 'sim', 'gazebo', or 'real'"
         ),
 
         rsp,
